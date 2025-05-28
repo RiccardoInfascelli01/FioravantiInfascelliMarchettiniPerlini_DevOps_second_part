@@ -24,3 +24,20 @@ jobs:
 
     - name: Run Tests
       run: ctest --test-dir build --output-on-failure
+
+    - name: Install Singularity
+      run: |
+        export VERSION=3.8.7 && # adjust this as necessary \
+        wget https://github.com/hpcng/singularity/releases/download/v${VERSION}/singularity-${VERSION}.tar.gz \
+        && sudo tar -xzf singularity-${VERSION}.tar.gz \
+        && cd singularity-${VERSION} \
+        && sudo ./mconfig \
+        && sudo make -C builddir \
+        && sudo make -C builddir install
+ 
+    - name : verifyVersion
+      run: singularity --version  
+
+    - name: Build Singularity container
+      run: |
+        sudo singularity build container.sif Singularity.def
