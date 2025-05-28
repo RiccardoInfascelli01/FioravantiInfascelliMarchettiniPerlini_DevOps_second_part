@@ -1,0 +1,33 @@
+Bootstrap: docker
+From: ubuntu:22.04
+
+%labels
+    Fioravanti, Infascelli, Marchettini, Perlini
+    Version v1.0
+
+%post
+    apt-get update && apt-get install -y \
+        build-essential \
+        cmake \
+        git \
+        libgtest-dev \
+        python3 \
+        python3-pip
+
+    # Build GTest
+    cd /usr/src/gtest && cmake . && make && cp lib/*.a /usr/lib
+
+    # Crea cartella per il progetto
+    mkdir -p /app
+
+%files
+    . /app  # copia TUTTO il repo dentro /app
+
+%environment
+    export PATH=/app/bin:$PATH
+
+%workdir /app
+
+%runscript
+    echo "Running grayscale converter..."
+    ./bin/convert_image input.ppm output.pgm
