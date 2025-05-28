@@ -44,12 +44,15 @@ jobs:
         sudo make -C builddir install
       shell: bash
 
+    - name: Check Singularity.def exists
+      run: ls -l Singularity.def
+
     - name: Build Singularity image
       run: |
         sudo singularity build image_converter.sif Singularity.def
 
     - name: Upload Singularity image as artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v2
       with:
         name: singularity-image
         path: image_converter.sif
