@@ -23,4 +23,4 @@ OUTPUT_DIR="grayscale_output"
 mkdir -p "$OUTPUT_DIR"
 
 # 4. Esegui il programma di conversione sulle immagini generate
-singularity run image_converter.sif random_images "$OUTPUT_DIR" Average
+singularity run container.sif random_images "$OUTPUT_DIR" Average
