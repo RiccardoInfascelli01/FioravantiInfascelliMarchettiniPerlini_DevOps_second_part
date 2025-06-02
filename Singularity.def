@@ -1,12 +1,11 @@
 Bootstrap: docker
 From: ubuntu:22.04
 
+%files
+    . /app
+
 %post
-
-    # Set noninteractive mode for apt-get
     export DEBIAN_FRONTEND=noninteractive
-
-    # Installa strumenti di compilazione e dipendenze base
     apt-get update && apt-get install -y \
         g++ \
         build-essential \
@@ -15,12 +14,7 @@ From: ubuntu:22.04
         python3 \
         python3-pip
 
-    # Clone the repo inside the container
-    cd /usr
-    git clone --recursive https://github.com/RiccardoInfascelli01/FioravantiInfascelliMarchettiniPerlini_DevOps_second_part.git
-
-    # Build
-    cd /usr/FioravantiInfascelliMarchettiniPerlini_DevOps_second_part/
+    cd /app
     ./build.sh
 
 %runscript
@@ -28,5 +22,6 @@ From: ubuntu:22.04
     OUTPUT_ARG="$2"
     OPERATION_MODE="$3"
     echo "Running grayscale converter..."
-    cd /usr/FioravantiInfascelliMarchettiniPerlini_DevOps_second_part
+    cd /app
     ./convert_grayscale "$INPUT_ARG" "$OUTPUT_ARG" "$OPERATION_MODE"
+
