@@ -6,14 +6,27 @@ From: ubuntu:22.04
     Version "v1.0"
 
 %post
+    # Aggiorna pacchetti base
     apt-get update && apt-get install -y \
+        software-properties-common \
         build-essential \
         cmake \
         git \
         libgtest-dev \
         python3 \
         python3-pip \
-        golang-go  # se usi Go, vedi sotto
+        golang-go
+
+    # Aggiungi repository toolchain aggiornata
+    add-apt-repository ppa:ubuntu-toolchain-r/test -y
+    apt-get update
+
+    # Installa gcc/g++ 12
+    apt-get install -y gcc-12 g++-12
+
+    # Imposta gcc-12 e g++-12 come default
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100
+    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100
 
     # Build GTest
     cd /usr/src/gtest && cmake . && make && cp lib/*.a /usr/lib
@@ -22,15 +35,13 @@ From: ubuntu:22.04
     mkdir -p /app
     chown -R root:root /app
 
-    # Copia i file sono gestiti da %files (non serve copiarli qui)
-
-    # Compila il progetto
+    # Compila il progetto usando gcc-12/g++-12
     cd /app
     chmod +x build.sh
     ./build.sh
 
 %files
-    . /app  # copia tutto dentro /app
+    . /app
 
 %environment
     export PATH=/app:$PATH
