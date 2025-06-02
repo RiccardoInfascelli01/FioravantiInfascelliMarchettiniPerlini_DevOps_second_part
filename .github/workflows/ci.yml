@@ -1,43 +1,35 @@
-name: C++ CI
+Bootstrap: docker
+From: ubuntu:22.04
 
-on: [push, pull_request]
+%labels
+    Authors "Fioravanti, Infascelli, Marchettini, Perlini"
+    Version "v1.0"
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+%post
+    apt-get update && apt-get install -y \
+        build-essential \
+        cmake \
+        git \
+        libgtest-dev \
+        python3 \
+        python3-pip \
+        golang-go  # se usi Go, vedi sotto
 
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: true
+    # Build GTest
+    cd /usr/src/gtest && cmake . && make && cp lib/*.a /usr/lib
 
-    - name: Setup CMake
-      uses: jwlawson/actions-setup-cmake@v1
-      with:
-            cmake-version: '3.27'
+    # Crea cartella progetto
+    mkdir -p /app
+    chown -R root:root /app
 
-    - name: Configure CMake
-      run: cmake -S . -B build
+%files
+    . /app  # copia tutto dentro /app
 
-    - name: Build
-      run: cmake --build build
+%environment
+    export PATH=/app/bin:$PATH
+    export HOME=/app
 
-    - name: Run Tests
-      run: ctest --test-dir build --output-on-failure
-
-    - name: Install Singularity
-      run: |
-        export VERSION=3.8.7 && # adjust this as necessary \
-        wget https://github.com/hpcng/singularity/releases/download/v${VERSION}/singularity-${VERSION}.tar.gz \
-        && sudo tar -xzf singularity-${VERSION}.tar.gz \
-        && cd singularity-${VERSION} \
-        && sudo ./mconfig \
-        && sudo make -C builddir \
-        && sudo make -C builddir install
- 
-    - name : verifyVersion
-      run: singularity --version  
-
-    - name: Build Singularity container
-      run: |
-        sudo singularity build container.sif Singularity.def
+%runscript
+    echo "Running grayscale converter..."
+    cd /app
+    ./bin/convert_image input.ppm output.pgm
