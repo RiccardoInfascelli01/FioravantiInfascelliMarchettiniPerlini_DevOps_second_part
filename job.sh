@@ -9,6 +9,9 @@
 # 1. Carica Singularity
 module load singularity
 
+# Creo la cartella input se non esiste
+mkdir -p random_images
+
 # 2. Genera immagini casuali
 NUM_IMAGES=10
 for i in $(seq 0 $((NUM_IMAGES - 1))); do
