@@ -2,8 +2,8 @@ Bootstrap: docker
 From: ubuntu:22.04
 
 %labels
-    Fioravanti, Infascelli, Marchettini, Perlini
-    Version v1.0
+    Authors "Fioravanti, Infascelli, Marchettini, Perlini"
+    Version "v1.0"
 
 %post
     apt-get update && apt-get install -y \
@@ -12,22 +12,24 @@ From: ubuntu:22.04
         git \
         libgtest-dev \
         python3 \
-        python3-pip
+        python3-pip \
+        golang-go  # se usi Go, vedi sotto
 
     # Build GTest
     cd /usr/src/gtest && cmake . && make && cp lib/*.a /usr/lib
 
-    # Crea cartella per il progetto
+    # Crea cartella progetto
     mkdir -p /app
+    chown -R root:root /app
 
 %files
-    . /app  # copia TUTTO il repo dentro /app
+    . /app  # copia tutto dentro /app
 
 %environment
     export PATH=/app/bin:$PATH
-
-%workdir /app
+    export HOME=/app
 
 %runscript
     echo "Running grayscale converter..."
+    cd /app
     ./bin/convert_image input.ppm output.pgm
