@@ -5,21 +5,39 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v2
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
 
-      - name: Install Singularity
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y singularity-container
+    - name: Setup CMake
+      uses: jwlawson/actions-setup-cmake@v1
+      with:
+            cmake-version: '3.27'
 
-      - name: Build container
-        run: |
-          sudo singularity build container.sif Singularity.def
+    - name: Configure CMake
+      run: cmake -S . -B build
 
-      - name: Upload container
-        uses: actions/upload-artifact@v3
-        with:
-          name: container
-          path: container.sif
+    - name: Build
+      run: cmake --build build
+
+    - name: Run Tests
+      run: ctest --test-dir build --output-on-failure
+
+    - name: Install Singularity
+      run: |
+        export VERSION=3.8.7 && # adjust this as necessary \
+        wget https://github.com/hpcng/singularity/releases/download/v${VERSION}/singularity-${VERSION}.tar.gz \
+        && sudo tar -xzf singularity-${VERSION}.tar.gz \
+        && cd singularity-${VERSION} \
+        && sudo ./mconfig \
+        && sudo make -C builddir \
+        && sudo make -C builddir install
+ 
+    - name : verifyVersion
+      run: singularity --version  
+
+    - name: Build Singularity container
+      run: |
+        sudo singularity build container.sif Singularity.def
