@@ -2,43 +2,17 @@ Bootstrap: docker
 From: ubuntu:22.04
 
 %post
-    # Aggiorna pacchetti base
+    # Installa strumenti di compilazione e dipendenze base
     apt-get update && apt-get install -y \
-        software-properties-common \
+        g++ \
         build-essential \
         cmake \
         git \
-        libgtest-dev \
         python3 \
         python3-pip \
-        golang-go \
-        wget \
-        libgmp-dev \
-        libmpfr-dev \
-        libmpc-dev \
-        flex \
-        bison
+        wget
 
-    # Scarica e compila GCC 13.2.0
-    cd /opt
-    wget https://ftp.gnu.org/gnu/gcc/gcc-13.2.0/gcc-13.2.0.tar.gz
-    tar -xzf gcc-13.2.0.tar.gz
-    cd gcc-13.2.0
-    ./contrib/download_prerequisites
-    mkdir build && cd build
-    ../configure --disable-multilib --enable-languages=c,c++
-    make -j$(nproc)
-    make install
-
-    # Aggiorna i link simbolici per gcc e g++
-    update-alternatives --install /usr/bin/gcc gcc /usr/local/bin/gcc 100
-    update-alternatives --install /usr/bin/g++ g++ /usr/local/bin/g++ 100
-
-    # Verifica la versione di gcc e g++
-    gcc --version
-    g++ --version
-
-    # Crea cartella progetto
+    # Crea cartella per il progetto
     mkdir -p /app
     chown -R root:root /app
 
@@ -47,13 +21,12 @@ From: ubuntu:22.04
     . /app
 
 %post
-    # Compila il progetto usando gcc-13.2.0/g++-13.2.0
+    # Compilazione manuale dentro il container
     cd /app
-    chmod +x build.sh
-    ./build.sh
+    g++ -std=c++17 -O2 -Wall -Wextra -Iinclude src/main.cpp src/image_processing.cpp -o convert_grayscale
 
 %environment
-    export PATH=/usr/local/bin:$PATH
+    export PATH=/usr/bin:$PATH
     export HOME=/app
 
 %runscript
