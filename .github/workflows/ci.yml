@@ -50,7 +50,7 @@ jobs:
         chmod 600 ~/.ssh/id_ecdsa
         chmod 644 ~/.ssh/id_ecdsa-cert.pub
 
-    - name: Copy container and script to cluster
+    - name: Copy container and scripts to cluster
       run: |
         scp -i ~/.ssh/id_ecdsa \
             -o CertificateFile=~/.ssh/id_ecdsa-cert.pub \
@@ -64,6 +64,12 @@ jobs:
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
             job.sh rinfasce@login.g100.cineca.it:/g100/home/userexternal/rinfasce/
+        scp -i ~/.ssh/id_ecdsa \
+            -o CertificateFile=~/.ssh/id_ecdsa-cert.pub \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            random_gen_images.py rinfasce@login.g100.cineca.it:/g100/home/userexternal/rinfasce/
 
     - name: Submit job on cluster
       run: |
