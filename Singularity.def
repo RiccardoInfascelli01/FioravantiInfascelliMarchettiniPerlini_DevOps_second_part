@@ -30,6 +30,10 @@ From: ubuntu:22.04
     export HOME=/app
 
 %runscript
+    INPUT_ARG="$1"
+    OUTPUT_ARG="$2"
+    OPERATION_MODE="$3"
     echo "Running grayscale converter..."
     cd /app
-    ./bin/convert_image input.ppm output.pgm
+    #convert_image?
+    ./bin/convert_grayscale "$INPUT_ARG" "$OUTPUT_ARG" "$OPERATION_MODE"
