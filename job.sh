@@ -1,14 +1,26 @@
-#!/bin/bash
-#SBATCH --job-name=grayscale_conversion
-#SBATCH --output=result.out
-#SBATCH --error=result.err
-#SBATCH --time=00:10:00
-#SBATCH --partition=debug
-#SBATCH --ntasks=1
+name: Build Singularity Container
 
-module load singularity
+on: [push, pull_request]
 
-INPUT_FILE=input.ppm
-OUTPUT_FILE=output.pgm
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-singularity run image_converter.sif "$INPUT_FILE" "$OUTPUT_FILE"
+      - name: Install Singularity
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y singularity-container
+
+      - name: Build container
+        run: |
+          sudo singularity build container.sif Singularity.def
+
+      - name: Upload container
+        uses: actions/upload-artifact@v2
+        with:
+          name: container
+          path: container.sif
+
