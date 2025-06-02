@@ -3,7 +3,7 @@
 #SBATCH --output=result.out
 #SBATCH --error=result.err
 #SBATCH --time=00:10:00
-#SBATCH --partition=debug
+#SBATCH --partition=g100_usr_dbg
 #SBATCH --ntasks=1
 
 # 1. Carica Singularity
