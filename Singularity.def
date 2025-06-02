@@ -5,9 +5,9 @@ From: ubuntu:22.04
 %files
     src /app/src
     include /app/include
+    external /app/external
     build.sh /app/build.sh
     CMakeLists.txt /app/CMakeLists.txt
-    requirements.txt /app/requirements.txt
 
 
 %post
