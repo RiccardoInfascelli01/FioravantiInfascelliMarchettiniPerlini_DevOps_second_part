@@ -6,7 +6,7 @@
 #include <string>
 #include <filesystem>
 #include <algorithm>
-#include "image_processing.hpp"
+#include "image_processing.cpp"
 
 
 namespace fs = std::filesystem;
