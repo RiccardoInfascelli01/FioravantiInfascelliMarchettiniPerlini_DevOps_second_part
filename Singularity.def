@@ -22,6 +22,13 @@ From: ubuntu:22.04
     mkdir -p /app
     chown -R root:root /app
 
+    # Copia i file sono gestiti da %files (non serve copiarli qui)
+
+    # Compila il progetto
+    cd /app
+    chmod +x build.sh
+    ./build.sh
+
 %files
     . /app  # copia tutto dentro /app
 
@@ -36,4 +43,3 @@ From: ubuntu:22.04
     echo "Running grayscale converter..."
     cd /app
     ./convert_grayscale "$INPUT_ARG" "$OUTPUT_ARG" "$OPERATION_MODE"
-
