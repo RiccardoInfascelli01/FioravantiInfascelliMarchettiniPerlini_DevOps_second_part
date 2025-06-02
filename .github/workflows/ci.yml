@@ -1,4 +1,4 @@
-name: Build Singularity Container
+name: Build Singularity Container 
 
 on:
   push:
