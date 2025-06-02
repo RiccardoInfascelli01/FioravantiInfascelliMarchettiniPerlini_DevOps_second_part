@@ -1,35 +1,27 @@
-Bootstrap: docker
-From: ubuntu:22.04
+name: Build Singularity Container
 
-%labels
-    Authors "Fioravanti, Infascelli, Marchettini, Perlini"
-    Version "v1.0"
+on:
+  push:
+    branches: [main]
 
-%post
-    apt-get update && apt-get install -y \
-        build-essential \
-        cmake \
-        git \
-        libgtest-dev \
-        python3 \
-        python3-pip \
-        golang-go  # se usi Go, vedi sotto
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-    # Build GTest
-    cd /usr/src/gtest && cmake . && make && cp lib/*.a /usr/lib
+      - name: Install Singularity
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y singularity-container
 
-    # Crea cartella progetto
-    mkdir -p /app
-    chown -R root:root /app
+      - name: Build container
+        run: |
+          sudo singularity build container.sif Singularity.def
 
-%files
-    . /app  # copia tutto dentro /app
-
-%environment
-    export PATH=/app/bin:$PATH
-    export HOME=/app
-
-%runscript
-    echo "Running grayscale converter..."
-    cd /app
-    ./bin/convert_image input.ppm output.pgm
+      - name: Upload container
+        uses: actions/upload-artifact@v3
+        with:
+          name: container
+          path: container.sif
