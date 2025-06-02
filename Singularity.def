@@ -1,8 +1,14 @@
 Bootstrap: docker
 From: ubuntu:22.04
 
+
 %files
-    . /app
+    src /app/src
+    include /app/include
+    build.sh /app/build.sh
+    CMakeLists.txt /app/CMakeLists.txt
+    requirements.txt /app/requirements.txt
+
 
 %post
     export DEBIAN_FRONTEND=noninteractive
