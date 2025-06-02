@@ -2,6 +2,10 @@ Bootstrap: docker
 From: ubuntu:22.04
 
 %post
+
+    # Set noninteractive mode for apt-get
+    export DEBIAN_FRONTEND=noninteractive
+
     # Installa strumenti di compilazione e dipendenze base
     apt-get update && apt-get install -y \
         g++ \
@@ -9,30 +13,20 @@ From: ubuntu:22.04
         cmake \
         git \
         python3 \
-        python3-pip \
-        wget
+        python3-pip
 
-    # Crea cartella per il progetto
-    mkdir -p /app
-    chown -R root:root /app
+    # Clone the repo inside the container
+    cd /usr
+    git clone --recursive https://github.com/RiccardoInfascelli01/FioravantiInfascelliMarchettiniPerlini_DevOps_second_part.git
 
-    # Copia i file del progetto
-%files
-    . /app
-
-%post
-    # Compilazione manuale dentro il container
-    cd /app
-    g++ -std=c++17 -O2 -Wall -Wextra -Iinclude src/main.cpp src/image_processing.cpp -o convert_grayscale
-
-%environment
-    export PATH=/usr/bin:$PATH
-    export HOME=/app
+    # Build
+    cd /usr/FioravantiInfascelliMarchettiniPerlini_DevOps_second_part/
+    ./build.sh
 
 %runscript
     INPUT_ARG="$1"
     OUTPUT_ARG="$2"
     OPERATION_MODE="$3"
     echo "Running grayscale converter..."
-    cd /app
+    cd /usr/FioravantiInfascelliMarchettiniPerlini_DevOps_second_part
     ./convert_grayscale "$INPUT_ARG" "$OUTPUT_ARG" "$OPERATION_MODE"
