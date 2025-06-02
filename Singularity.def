@@ -26,7 +26,7 @@ From: ubuntu:22.04
     . /app  # copia tutto dentro /app
 
 %environment
-    export PATH=/app/bin:$PATH
+    export PATH=/app:$PATH
     export HOME=/app
 
 %runscript
@@ -35,5 +35,5 @@ From: ubuntu:22.04
     OPERATION_MODE="$3"
     echo "Running grayscale converter..."
     cd /app
-    #convert_image?
-    ./bin/convert_grayscale "$INPUT_ARG" "$OUTPUT_ARG" "$OPERATION_MODE"
+    ./convert_grayscale "$INPUT_ARG" "$OUTPUT_ARG" "$OPERATION_MODE"
+
