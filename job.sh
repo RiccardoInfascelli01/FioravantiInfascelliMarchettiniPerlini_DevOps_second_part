@@ -1,26 +1,23 @@
-name: Build Singularity Container
+#!/bin/bash
+#SBATCH --job-name=grayscale_conversion
+#SBATCH --output=result.out
+#SBATCH --error=result.err
+#SBATCH --time=00:10:00
+#SBATCH --partition=debug
+#SBATCH --ntasks=1
 
-on: [push, pull_request]
+# 1. Carica Singularity
+module load singularity
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+# 2. Genera immagini casuali
+NUM_IMAGES=10
+for i in $(seq 0 $((NUM_IMAGES - 1))); do
+    python3 generate_random_image.py "$i"
+done
 
-      - name: Install Singularity
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y singularity-container
+# 3. Crea cartella di output
+OUTPUT_DIR="grayscale_output"
+mkdir -p "$OUTPUT_DIR"
 
-      - name: Build container
-        run: |
-          sudo singularity build container.sif Singularity.def
-
-      - name: Upload container
-        uses: actions/upload-artifact@v2
-        with:
-          name: container
-          path: container.sif
-
+# 4. Esegui il programma (input: random_images/, output: grayscale_output/)
+singularity run image_converter.sif random_images "$OUTPUT_DIR" Average
