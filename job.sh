@@ -8,5 +8,7 @@
 
 module load singularity
 
-# Supponendo che l'app sia configurata per accettare input/output come argomenti
-singularity run image_converter.sif input.ppm output.pgm
+INPUT_FILE=input.ppm
+OUTPUT_FILE=output.pgm
+
+singularity run image_converter.sif "$INPUT_FILE" "$OUTPUT_FILE"
