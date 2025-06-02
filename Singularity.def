@@ -15,6 +15,7 @@ From: ubuntu:22.04
         python3-pip
 
     cd /app
+    chmod +x build.sh
     ./build.sh
 
 %runscript
