@@ -10,8 +10,7 @@
 // ============================================================================
 // This test suite performs BIT-LEVEL VALIDATION of the convertToGrayscale()
 // function provided in the compiled static library. The purpose is to test 
-// the grayscale conversion behavior under single-bit changes in RGB input
-// channels and check for correctness, sensitivity, and potential bugs.
+// the grayscale conversion behavior under single-bit and check for correctness, sensitivity, and potential bugs.
 
 
 // TEST 1 — RedChannel — Flip bit 1 in R (should change output, but doesn't)
