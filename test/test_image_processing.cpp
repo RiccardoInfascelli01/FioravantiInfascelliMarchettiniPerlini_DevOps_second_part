@@ -166,6 +166,153 @@ TEST(BitLevelTest, RMSMethod_GreenJump) {
         << "RMS should grow significantly when G changes from 0 to 64.";
 }
 
+// ===================================================
+// R: Output should be exactly the R value, in [0, 255]
+// ===================================================
+
+TEST(RedChannel_Limits, R_InRange) {
+    std::array<int, 3> pixel = {255, 0, 0};
+    std::vector<std::vector<std::array<int, 3>>> image = {{pixel}};
+    std::vector<std::vector<int>> result;
+    convertToGrayscale(image, 1, 1, GrayscaleMethod::RedChannel, result);
+    EXPECT_GE(result[0][0], 0);
+    EXPECT_LE(result[0][0], 255);
+}
+
+TEST(RedChannel_Limits, R_NotNegative) {
+    std::array<int, 3> pixel = {0, 100, 100};
+    std::vector<std::vector<std::array<int, 3>>> image = {{pixel}};
+    std::vector<std::vector<int>> result;
+    convertToGrayscale(image, 1, 1, GrayscaleMethod::RedChannel, result);
+    EXPECT_GE(result[0][0], 0);
+}
+
+// ===================================================
+// G: Output should be G only, in [0, 255]
+// ===================================================
+
+TEST(GreenChannel_Limits, G_InRange) {
+    std::array<int, 3> pixel = {0, 255, 0};
+    std::vector<std::vector<std::array<int, 3>>> image = {{pixel}};
+    std::vector<std::vector<int>> result;
+    convertToGrayscale(image, 1, 1, GrayscaleMethod::GreenChannel, result);
+    EXPECT_GE(result[0][0], 0);
+    EXPECT_LE(result[0][0], 255);
+}
+
+TEST(GreenChannel_Limits, G_NotNegative) {
+    std::array<int, 3> pixel = {100, 0, 100};
+    std::vector<std::vector<std::array<int, 3>>> image = {{pixel}};
+    std::vector<std::vector<int>> result;
+    convertToGrayscale(image, 1, 1, GrayscaleMethod::GreenChannel, result);
+    EXPECT_GE(result[0][0], 0);
+}
+
+// ===================================================
+// B: Output should be B only, in [0, 255]
+// ===================================================
+
+TEST(BlueChannel_Limits, B_InRange) {
+    std::array<int, 3> pixel = {0, 0, 255};
+    std::vector<std::vector<std::array<int, 3>>> image = {{pixel}};
+    std::vector<std::vector<int>> result;
+    convertToGrayscale(image, 1, 1, GrayscaleMethod::BlueChannel, result);
+    EXPECT_GE(result[0][0], 0);
+    EXPECT_LE(result[0][0], 255);
+}
+
+TEST(BlueChannel_Limits, B_NotNegative) {
+    std::array<int, 3> pixel = {100, 100, 0};
+    std::vector<std::vector<std::array<int, 3>>> image = {{pixel}};
+    std::vector<std::vector<int>> result;
+    convertToGrayscale(image, 1, 1, GrayscaleMethod::BlueChannel, result);
+    EXPECT_GE(result[0][0], 0);
+}
+
+// ===================================================
+// Luminosity = 0.21*R + 0.72*G + 0.07*B
+// ===================================================
+
+TEST(Luminosity_Limits, InRange) {
+    std::array<int, 3> pixel = {255, 255, 255};
+    std::vector<std::vector<std::array<int, 3>>> image = {{pixel}};
+    std::vector<std::vector<int>> result;
+    convertToGrayscale(image, 1, 1, GrayscaleMethod::Luminosity, result);
+    EXPECT_GE(result[0][0], 0);
+    EXPECT_LE(result[0][0], 255);
+}
+
+TEST(Luminosity_Limits, NotNegative) {
+    std::array<int, 3> pixel = {0, 0, 0};
+    std::vector<std::vector<std::array<int, 3>>> image = {{pixel}};
+    std::vector<std::vector<int>> result;
+    convertToGrayscale(image, 1, 1, GrayscaleMethod::Luminosity, result);
+    EXPECT_GE(result[0][0], 0);
+}
+
+// ===================================================
+// Lightness = (max(R,G,B) + min(R,G,B)) / 2
+// ===================================================
+
+TEST(Lightness_Limits, InRange) {
+    std::array<int, 3> pixel = {255, 0, 255};
+    std::vector<std::vector<std::array<int, 3>>> image = {{pixel}};
+    std::vector<std::vector<int>> result;
+    convertToGrayscale(image, 1, 1, GrayscaleMethod::Lightness, result);
+    EXPECT_GE(result[0][0], 0);
+    EXPECT_LE(result[0][0], 255);
+}
+
+TEST(Lightness_Limits, NotNegative) {
+    std::array<int, 3> pixel = {0, 0, 0};
+    std::vector<std::vector<std::array<int, 3>>> image = {{pixel}};
+    std::vector<std::vector<int>> result;
+    convertToGrayscale(image, 1, 1, GrayscaleMethod::Lightness, result);
+    EXPECT_GE(result[0][0], 0);
+}
+
+// ===================================================
+// Average = (R + G + B) / 3
+// ===================================================
+
+TEST(Average_Limits, InRange) {
+    std::array<int, 3> pixel = {255, 255, 255};
+    std::vector<std::vector<std::array<int, 3>>> image = {{pixel}};
+    std::vector<std::vector<int>> result;
+    convertToGrayscale(image, 1, 1, GrayscaleMethod::Average, result);
+    EXPECT_GE(result[0][0], 0);
+    EXPECT_LE(result[0][0], 255);
+}
+
+TEST(Average_Limits, NotNegative) {
+    std::array<int, 3> pixel = {0, 0, 0};
+    std::vector<std::vector<std::array<int, 3>>> image = {{pixel}};
+    std::vector<std::vector<int>> result;
+    convertToGrayscale(image, 1, 1, GrayscaleMethod::Average, result);
+    EXPECT_GE(result[0][0], 0);
+}
+
+// ===================================================
+// RMS = sqrt((R^2 + G^2 + B^2) / 3)
+// ===================================================
+
+TEST(RMS_Limits, InRange) {
+    std::array<int, 3> pixel = {255, 255, 255};
+    std::vector<std::vector<std::array<int, 3>>> image = {{pixel}};
+    std::vector<std::vector<int>> result;
+    convertToGrayscale(image, 1, 1, GrayscaleMethod::RootMeanSquare, result);
+    EXPECT_GE(result[0][0], 0);
+    EXPECT_LE(result[0][0], 255);
+}
+
+TEST(RMS_Limits, NotNegative) {
+    std::array<int, 3> pixel = {0, 0, 0};
+    std::vector<std::vector<std::array<int, 3>>> image = {{pixel}};
+    std::vector<std::vector<int>> result;
+    convertToGrayscale(image, 1, 1, GrayscaleMethod::RootMeanSquare, result);
+    EXPECT_GE(result[0][0], 0);
+}
+
 
 
 
