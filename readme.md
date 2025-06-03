@@ -42,6 +42,8 @@ This project provides a utility to convert `.ppm` images to `.pgm` format using 
 ./convert_grayscale <input_folder> <output_folder> <grayscale_method>
 ```
 
+---
+
 ## Part 2: Automation, Containerization & Cluster Execution
 
 After implementing the test suites in the first part of the project ([link to part 1 repository](https://github.com/marchettinibiancamaria/FioravantiInfascelliMarchettiniPerlini_DevOps_first_part.git)), we focused on fully automating the grayscale image conversion pipeline. This included building a container, compiling and testing the project on every push, and running the job on the **CINECA G100 cluster** using **GitHub Actions** and **SLURM** for job scheduling.
@@ -75,15 +77,22 @@ Cluster jobs are submitted using the `job.sh` script. This script is configured 
 
 This setup ensures that our image conversion jobs are properly queued, executed, and logged within the cluster environment.
 
+---
+
 ### Example Image Processing
 
 We used the `random_gen_images.py` script to generate random `.ppm` images to test the grayscale conversion functionality at scale. These were processed on the cluster using the **Average** grayscale method.
 
 Converted `.pgm` outputs are available in the `results` directory and demonstrate the system working end-to-end on the cluster.
 
+---
+
 ### Collaboration & Troubleshooting
 
 The entire team collaborated on identifying potential challenges and edge cases in automation, testing, and cluster execution. Each member contributed to both planning and implementation, ensuring robust coverage and smooth deployment.
 
+---
 ## License
 This project is licensed under the [MIT License](./LICENSE).
+
+---
