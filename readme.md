@@ -84,3 +84,6 @@ Converted `.pgm` outputs are available in the `results` directory and demonstrat
 ### Collaboration & Troubleshooting
 
 The entire team collaborated on identifying potential challenges and edge cases in automation, testing, and cluster execution. Each member contributed to both planning and implementation, ensuring robust coverage and smooth deployment.
+
+## License
+This project is licensed under the [MIT License](./LICENSE).
