@@ -12,7 +12,10 @@ From: ubuntu:22.04
         cmake \
         git \
         python3 \
-        python3-pip
+        python3-pip \
+
+    pip3 install --upgrade pip
+    pip3 install -r /app/requirements.txt
 
     cd /app
     rm -rf build
