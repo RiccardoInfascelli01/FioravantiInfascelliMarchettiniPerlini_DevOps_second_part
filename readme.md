@@ -67,7 +67,7 @@ Cluster jobs are submitted using the `job.sh` script. This script is configured 
 
 This setup ensures that our image conversion jobs are properly queued, executed, and logged within the cluster environment.
 
-### 🖼Example Image Processing
+### Example Image Processing
 
 We used the `random_gen_images.py` script to generate random `.ppm` images to test the grayscale conversion functionality at scale. These were processed on the cluster using the **Average** grayscale method.
 
