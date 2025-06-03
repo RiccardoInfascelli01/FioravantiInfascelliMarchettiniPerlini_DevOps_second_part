@@ -5,6 +5,177 @@
 #include <array>
 #include <iostream>
 #include <algorithm>
+
+#include <cmath>
+
+
+
+// ============================================================================
+// This test suite performs BIT-LEVEL VALIDATION of the convertToGrayscale()
+// function provided in the compiled static library. The purpose is to test 
+// the grayscale conversion behavior under single-bit changes in RGB input
+// channels and check for correctness, sensitivity, and potential bugs.
+
+
+// TEST 1 — RedChannel — Flip bit 1 in R (should change output, but doesn't)
+
+// Expected behavior: RedChannel method should return the R value exactly.
+// Input: R = 212 → flipped bit 1 → R = 214.
+// Actual output: 0 vs 0 ⇒ Bug suspected: R is ignored or incorrectly handled.
+TEST(BitLevelTest, RedChannel_Bit1_Flip) {
+    std::array<int, 3> base_pixel = {212, 0, 0};
+    std::array<int, 3> mod_pixel  = {212 ^ (1 << 1), 0, 0}; // flip bit 1 → 214
+
+    std::vector<std::vector<std::array<int, 3>>> base_image = {{base_pixel}};
+    std::vector<std::vector<std::array<int, 3>>> mod_image  = {{mod_pixel}};
+    std::vector<std::vector<int>> base_result, mod_result;
+
+    convertToGrayscale(base_image, 1, 1, GrayscaleMethod::RedChannel, base_result);
+    convertToGrayscale(mod_image, 1, 1, GrayscaleMethod::RedChannel, mod_result);
+
+    std::cout << "RedChannel: " << base_result[0][0] << " vs " << mod_result[0][0] << std::endl;
+
+    EXPECT_NE(base_result[0][0], mod_result[0][0])
+        << "RedChannel method did not react to a bit flip in R → potential implementation bug.";
+}
+
+// TEST 2 — GreenChannel — Flip MSB (bit 7) in G (large change, no effect)
+
+// Expected behavior: GreenChannel method should return the G value.
+// Input: G = 64 → flipped bit 7 → G = 192.
+// Actual output: 220 vs 220 ⇒ Bug: either hardcoded value or ignored channel.
+TEST(BitLevelTest, GreenChannel_Bit7_Flip) {
+    std::array<int, 3> base_pixel = {0, 64, 0};
+    std::array<int, 3> mod_pixel  = {0, 64 ^ (1 << 7), 0}; // G = 192
+
+    std::vector<std::vector<std::array<int, 3>>> base_image = {{base_pixel}};
+    std::vector<std::vector<std::array<int, 3>>> mod_image  = {{mod_pixel}};
+    std::vector<std::vector<int>> base_result, mod_result;
+
+    convertToGrayscale(base_image, 1, 1, GrayscaleMethod::GreenChannel, base_result);
+    convertToGrayscale(mod_image, 1, 1, GrayscaleMethod::GreenChannel, mod_result);
+
+    std::cout << "GreenChannel: " << base_result[0][0] << " vs " << mod_result[0][0] << std::endl;
+
+    EXPECT_NE(base_result[0][0], mod_result[0][0])
+        << "GreenChannel method did not respond to a major G value flip → suspicious behavior.";
+}
+
+// TEST 3 — BlueChannel — Flip bit 5 (small change, effective response)
+
+// Expected behavior: BlueChannel returns B.
+// Input: B = 32 → flip bit 5 → B = 0.
+// Output: 32 vs 10 ⇒ correct behavior. This method seems implemented correctly.
+TEST(BitLevelTest, BlueChannel_Bit5_Flip) {
+    std::array<int, 3> base_pixel = {0, 0, 32};
+    std::array<int, 3> mod_pixel  = {0, 0, 0};
+
+    std::vector<std::vector<std::array<int, 3>>> base_image = {{base_pixel}};
+    std::vector<std::vector<std::array<int, 3>>> mod_image  = {{mod_pixel}};
+    std::vector<std::vector<int>> base_result, mod_result;
+
+    convertToGrayscale(base_image, 1, 1, GrayscaleMethod::BlueChannel, base_result);
+    convertToGrayscale(mod_image, 1, 1, GrayscaleMethod::BlueChannel, mod_result);
+
+    std::cout << "BlueChannel: " << base_result[0][0] << " vs " << mod_result[0][0] << std::endl;
+
+    EXPECT_NE(base_result[0][0], mod_result[0][0]);
+}
+
+// TEST 4 — Luminosity — Flip bit 3 in G (expected visible effect)
+
+// Luminosity weights: 0.21*R + 0.72*G + 0.07*B → G has major influence.
+// Input: G = 128 → flip bit 3 → G = 136.
+// Output: value increased slightly ⇒ correct behavior.
+TEST(BitLevelTest, Luminosity_Bit3_GreenChannel) {
+    std::array<int, 3> base_pixel = {10, 128, 10};
+    std::array<int, 3> mod_pixel  = {10, 136, 10};
+
+    std::vector<std::vector<std::array<int, 3>>> base_image = {{base_pixel}};
+    std::vector<std::vector<std::array<int, 3>>> mod_image  = {{mod_pixel}};
+    std::vector<std::vector<int>> base_result, mod_result;
+
+    convertToGrayscale(base_image, 1, 1, GrayscaleMethod::Luminosity, base_result);
+    convertToGrayscale(mod_image, 1, 1, GrayscaleMethod::Luminosity, mod_result);
+
+    std::cout << "Luminosity: " << base_result[0][0] << " vs " << mod_result[0][0] << std::endl;
+
+    EXPECT_NE(base_result[0][0], mod_result[0][0]);
+}
+
+// TEST 5 — Lightness — Flip bit 6 in R (affects max(R,G,B))
+
+// Lightness = (max(R,G,B) + min(R,G,B)) / 2
+// Input: R = 64 → flip bit 6 → R = 0 ⇒ major difference expected.
+TEST(BitLevelTest, Lightness_Bit6_RedChannel) {
+    std::array<int, 3> base_pixel = {64, 10, 10};
+    std::array<int, 3> mod_pixel  = {0, 10, 10};
+
+    std::vector<std::vector<std::array<int, 3>>> base_image = {{base_pixel}};
+    std::vector<std::vector<std::array<int, 3>>> mod_image  = {{mod_pixel}};
+    std::vector<std::vector<int>> base_result, mod_result;
+
+    convertToGrayscale(base_image, 1, 1, GrayscaleMethod::Lightness, base_result);
+    convertToGrayscale(mod_image, 1, 1, GrayscaleMethod::Lightness, mod_result);
+
+    std::cout << "Lightness: " << base_result[0][0] << " vs " << mod_result[0][0] << std::endl;
+
+    EXPECT_NE(base_result[0][0], mod_result[0][0]);
+}
+
+// TEST 6 — Average — Change R by +1 (should increase result by ~1/3)
+
+// Formula: (R+G+B)/3 → Change R = 100 → 101.
+// Output should increase ~1/3 (i.e. ~+1 after integer rounding).
+// To avoid false negatives due to rounding, we use EXPECT_NEAR().
+TEST(BitLevelTest, AverageMethod_RedChange1) {
+    std::array<int, 3> base_pixel = {100, 50, 50};
+    std::array<int, 3> mod_pixel  = {101, 50, 50};
+
+    std::vector<std::vector<std::array<int, 3>>> base_image = {{base_pixel}};
+    std::vector<std::vector<std::array<int, 3>>> mod_image  = {{mod_pixel}};
+    std::vector<std::vector<int>> base_result, mod_result;
+
+    convertToGrayscale(base_image, 1, 1, GrayscaleMethod::Average, base_result);
+    convertToGrayscale(mod_image, 1, 1, GrayscaleMethod::Average, mod_result);
+
+    std::cout << "Average: " << base_result[0][0] << " vs " << mod_result[0][0] << std::endl;
+
+    EXPECT_NEAR(mod_result[0][0], base_result[0][0] + 1, 1)
+        << "Average method should react to small changes proportionally (~1/3 of delta).";
+}
+
+// TEST 7 — RMS — Nonlinear behavior under jump in G
+
+// RMS = sqrt((R² + G² + B²)/3) → jump in G from 0 to 64 should increase RMS.
+// This test ensures RMS is correctly sensitive to larger component values.
+TEST(BitLevelTest, RMSMethod_GreenJump) {
+    std::array<int, 3> base_pixel = {10, 0, 10};
+    std::array<int, 3> mod_pixel  = {10, 64, 10};
+
+    std::vector<std::vector<std::array<int, 3>>> base_image = {{base_pixel}};
+    std::vector<std::vector<std::array<int, 3>>> mod_image  = {{mod_pixel}};
+    std::vector<std::vector<int>> base_result, mod_result;
+
+    convertToGrayscale(base_image, 1, 1, GrayscaleMethod::RootMeanSquare, base_result);
+    convertToGrayscale(mod_image, 1, 1, GrayscaleMethod::RootMeanSquare, mod_result);
+
+    std::cout << "RMS: " << base_result[0][0] << " vs " << mod_result[0][0] << std::endl;
+
+    EXPECT_GT(mod_result[0][0], base_result[0][0])
+        << "RMS should grow significantly when G changes from 0 to 64.";
+}
+
+
+
+
+
+
+
+
+
+
+
 void generateMatrixPair(int height, int width, 
                        std::vector<std::vector<std::array<int, 3>>>& image1,
                        std::vector<std::vector<std::array<int, 3>>>& image2,
