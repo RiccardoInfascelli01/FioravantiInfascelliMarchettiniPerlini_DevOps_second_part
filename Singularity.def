@@ -32,6 +32,6 @@ From: ubuntu:22.04
     OUTPUT_ARG="$2"
     OPERATION_MODE="$3"
     echo "Running grayscale converter..."
-    cd /app
+    cd /usr/local/bin/
     ./convert_grayscale "$INPUT_ARG" "$OUTPUT_ARG" "$OPERATION_MODE"
 
