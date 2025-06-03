@@ -54,13 +54,13 @@ We defined a GitHub Actions workflow that performs the following tasks automatic
 
 1. **Builds the project** and compiles all necessary binaries.
 2. **Runs all test suites** to ensure the correctness of the implementation.
-3. **Builds a Singularity container** with all required dependencies.
-4. **Deploys the container** to the CINECA G100 cluster.
+3. **Builds a Singularity container** with all required dependencies (after installing Singularity).
+4. **Deploys the container** to the CINECA G100 cluster, using Github Secrets to allow for secret ssh keys to be used to connect to the cluster.
 5. **Submits the job to SLURM**, the workload manager used by CINECA, to execute the grayscale conversion on the cluster.
 
 ### Containerization with Singularity
 
-The container is defined in the `Singularity.def` file and includes everything needed to run the conversion program in an isolated, reproducible environment. This ensures compatibility across different systems and makes it easier to run on HPC environments like CINECA.
+The container is defined in the `Singularity.def` file and includes everything needed to run the conversion program in an isolated, reproducible environment.
 
 ### Secure Cluster Authentication
 
@@ -89,7 +89,7 @@ Converted `.pgm` outputs are available in the `results` directory and demonstrat
 
 ### Collaboration & Troubleshooting
 
-The entire team collaborated on identifying potential challenges and edge cases in automation, testing, and cluster execution. Each member contributed to both planning and implementation, ensuring robust coverage and smooth deployment.
+The entire team collaborated on identifying potential challenges and edge cases in automation, testing, and cluster execution. Each member contributed to both planning and implementation.
 
 ---
 ## License
