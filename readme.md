@@ -1,3 +1,11 @@
+## Authors
+
+- Michele Fioravanti (11098551)  
+- Riccardo Infascelli (10742969)  
+- Bianca Maria Marchettini (11098150)  
+- Aurora Perlini (10788118)  
+
+
 # Grayscale Image Conversion Utility
 
 This project provides a utility to convert `.ppm` images to `.pgm` format using various grayscale conversion methods. The tool processes all `.ppm` images in a specified input folder and saves the converted `.pgm` images in an output folder.
