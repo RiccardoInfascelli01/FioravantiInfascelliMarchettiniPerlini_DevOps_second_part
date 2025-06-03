@@ -24,7 +24,8 @@ From: ubuntu:22.04
     ./build.sh
 
     # Poi sposta il binario compilato dove vuoi (es. /usr/local/bin)
-    cp convert_grayscale /usr/local/bin/
+    mkdir /esegui
+    cp convert_grayscale /esegui
 
 
 
@@ -35,9 +36,6 @@ From: ubuntu:22.04
 
     echo "Running grayscale converter..."
 
-    # Sposta l'eseguibile nella tua home (se proprio ti serve lì)
-    cp /usr/local/bin/convert_grayscale /g100/home/userexternal/rinfasce/
-
     # Ora esegui
-    /g100/home/userexternal/rinfasce/convert_grayscale "$INPUT_ARG" "$OUTPUT_ARG" "$OPERATION_MODE"
+    /esegui/convert_grayscale "$INPUT_ARG" "$OUTPUT_ARG" "$OPERATION_MODE"
 
