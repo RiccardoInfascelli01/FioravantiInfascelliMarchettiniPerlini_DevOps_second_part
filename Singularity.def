@@ -5,7 +5,7 @@ From: ubuntu:22.04
 %files
     . /app
 
-%post
+ %post
     export DEBIAN_FRONTEND=noninteractive
     apt-get update && apt-get install -y \
         g++ \
@@ -15,10 +15,17 @@ From: ubuntu:22.04
         python3 \
         python3-pip
 
-    cd /app    
+    # Copia /app in una directory temporanea per la build
+    mkdir -p /tmp/build_dir
+    cp -r /app/* /tmp/build_dir/
+    cd /tmp/build_dir
     rm -rf build
     chmod +x build.sh
     ./build.sh
+
+    # Poi sposta il binario compilato dove vuoi (es. /usr/local/bin)
+    cp convert_grayscale /usr/local/bin/
+
 
 %runscript
     INPUT_ARG="$1"
